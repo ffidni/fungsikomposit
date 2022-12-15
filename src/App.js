@@ -4,8 +4,8 @@ const mathsteps = require('mathsteps');
 
 function App() {
   const [exprs, setExprs] = useState([
-    { key: 'x', val: '2x+1' },
-    { key: 'g', val: 'g+1' },
+    { key: 'f', val: '2x+1' },
+    { key: 'g', val: 'x+1' },
   ]);
   const [resultSteps, setResultSteps] = useState([]);
   const [invalid, setInvalid] = useState(false);
@@ -26,29 +26,23 @@ function App() {
       return equation;
     } else {
       functions.splice(0, 1);
-      return equation.replace(first.key, `(${combineFunctions(functions)})`);
+      return equation.replace('x', `(${combineFunctions(functions)})`);
     }
   }
 
   function solve() {
-    let valid = true;
-    exprs.forEach((expr) => {
-      if (!expr.val.includes(expr.key)) valid = false;
-    });
-    if (valid) {
-      const result = combineFunctions([...exprs]);
-      const steps = mathsteps.simplifyExpression(result);
-      if (steps.length === 0) {
-        setInvalid(true);
-      } else {
-        setResultSteps(steps);
-        steps.forEach((step) => {
-          console.log('before change: ' + step.oldNode.toString()); // before change: 2 x + 2 x + x + x
-          console.log('after change: ' + step.newNode.toString()); // after change: 6 x
-          console.log('# of substeps: ' + step.substeps.length); // # of substeps: 3
-        });
-      }
-    } else setInvalid(true);
+    const result = combineFunctions([...exprs]);
+    const steps = mathsteps.simplifyExpression(result);
+    if (steps.length === 0) {
+      setInvalid(true);
+    } else {
+      setResultSteps(steps);
+      steps.forEach((step) => {
+        console.log('before change: ' + step.oldNode.toString()); // before change: 2 x + 2 x + x + x
+        console.log('after change: ' + step.newNode.toString()); // after change: 6 x
+        console.log('# of substeps: ' + step.substeps.length); // # of substeps: 3
+      });
+    }
   }
 
   return (
@@ -74,7 +68,7 @@ function App() {
             {exprs.map((expr) => {
               return (
                 <div className="expression">
-                  <p className="key">f({expr.key})</p>
+                  <p className="key">{expr.key}(x)</p>
                   <input
                     className="input"
                     value={expr.val}
